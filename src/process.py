@@ -8,14 +8,32 @@ print(logs[1])
 
 # Extract dates and times
 dates_and_times = [[log[3], log[4]] for log in logs[1:]]
+object_and_dates = [[log[0], log[3]] for log in logs[1:]]
+objects_dates_times = [[log[0], log[3], log[4]] for log in logs[1:]]
 num_dates = len(dates_and_times)
 
 # Convert 'MM/DD/YY' to 'YY-MM-DD' using datetime.strptime
 from datetime import datetime
 dates_and_times = [[datetime.strptime(date, '%m/%d/%y').strftime('%y-%m-%d'), time] for date, time in dates_and_times]
 dates_and_times = sorted(dates_and_times, key=lambda x: x[0])
-#for date, time in dates_and_times:
-#    print(date, time)
+
+object_and_dates = [[object, datetime.strptime(date, '%m/%d/%y').strftime('%y-%m-%d')] for object, date in object_and_dates]
+object_and_dates = sorted(object_and_dates, key=lambda x: x[1])
+
+objects_dates_times = [[object, datetime.strptime(date, '%m/%d/%y').strftime('%y-%m-%d'), time] for object, date, time in objects_dates_times]
+
+def convert_to_datetime(date_str, time_str):
+    # Assuming the date is in YY-MM-DD format
+    datetime_str = f"{date_str} {time_str}"
+    return datetime.strptime(datetime_str, '%y-%m-%d %I:%M %p')
+
+objects_dates_times.sort(key=lambda x: convert_to_datetime(x[1], x[2]))
+
+
+i = 1
+for object, date, time in objects_dates_times:
+    print(i,object, date, time)
+    i += 1
 
 num_dates = len(set([date for date, time in dates_and_times]))
 
@@ -41,6 +59,6 @@ plt.axhline(y=average, color='r', linestyle='-')
 plt.ylabel('Objects logged')
 plt.xlabel('Date')
 
-#plt.show()
+plt.show()
 
 # ~30 trips, ~3 entries per trip
